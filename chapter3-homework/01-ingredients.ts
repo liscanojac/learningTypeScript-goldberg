@@ -1,5 +1,4 @@
 // Please correct any type annotation problems here! ✨
-//jhsdjfhuj
 let arugula: number | undefined;
 let dressing: string;
 let lettuce: number | undefined;
