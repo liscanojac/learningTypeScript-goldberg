@@ -14,6 +14,7 @@ type StringCreators = (() => string)[];
 type StringOrArrayOfNumbers = string | number[];
 
 // this type refers to an array of elements that are either a number or a string
+// this showcases how parentheses matter
 type ArrayOfStringsOrNumbers = (string | number)[];
 
 // MULTIDIMENSIONAL ARRAYS
@@ -30,7 +31,7 @@ let arrayOfArrayOfNumbers: ArrayOfNumbersArray = [
 // a tidier way to represent this is with parentheses
 
 type ArrayOfNumbersArray2 = (number[])[]
-// so in the parenthesis you are stiting what is in the inner array
+// so in the parenthesis you are stating what is in the inner array
 let arrayOfArrayOfNumbers2: ArrayOfNumbersArray2 = [
   [1, 2, 3],
   [4, 5, 6],
