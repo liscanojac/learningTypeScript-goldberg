@@ -118,6 +118,149 @@ interface WordCounts {
   [i: string]: number;
 };
 
-// this is a good way to define an object where you dont know the name of the properties 
+// this is a good way to define an object where you dont know the name of the properties but its type
+
+const counts: WordCounts = {};
+
+counts.apple = 2;
+counts.bananas = 1;
+
+// counts.cherry = false;
+// and logically this throws an error, because the type boolean is not assignable to type number
+
+// although that use this very carefully because is not 100% type safe 
+// Lets see an example of this
+
+interface DatesByName {
+  [i: string]: Date;
+};
+
+const publishDates: DatesByName = {
+  Frankenstein: new Date("1 January 1818")
+};
+// so, we declared this object pusblishDates by the interface DatesByName and a prop Frankenstein that indeed its a Date
+// so, there is not issues on reading that property or apply Date methods to it, like toString()
+
+publishDates.Frankenstein;
+// no issues here
+publishDates.Frankenstein.toString();
+// no issues here either
+
+// here comes the trouble
+publishDates.Beloved;
+// this prop Beloved has a defined type, Date, but a runtime value of undefined!!!
+// and this not all
+// because it has a type of Date, you can apply mehods to it! which are going to lead to runtime errors that TS is not catching by type checking
+
+publishDates.Beloved.toString();
+// this line will throw an error, because you cant apply toString to undefined
+
+// MIXING PROPERTIES AND INDEX SIGNATURES
+// you can declare named properties and catchall props 
+// Here, HistoricalNovels declares that all properties are type number and additionally the Oroonoko property must exist
+
+interface HistoricalNovels {
+  Oroonoko: number;
+  [i: string]: number
+};
+
+// and now you can declare an object with properties of any name as long they are equal to a number but you have to make sure that Oroonoko exists as a prop and its equal to a number
+
+const novels: HistoricalNovels = {
+  Outlander: 1991,
+  Oroonoko: 1688
+}
+
+// const missingOroonoko: HistoricalNovels = {
+//   Outlander: 1991
+// }
+// this variable throws an error because it is missing a required property (Oroonoko)
+
+// One more trick is to be even more specific about properties in interfaces
+// Here, ChapterStarts has a property perface that not only must exists but also has to be equal to 0
+
+interface ChapterStarts {
+  preface: 0;
+  [i: string]: number
+}
+
+// as a result everytime you use the ChapterStarts interface to declare an object with, that object must have a property 'preface' and it has to be equal to 0
+
+const correctPreface: ChapterStarts = {
+  preface: 0,
+  night: 1,
+  shopping: 5
+}
+
+// const wrongPreface: ChapterStarts = {
+//   preface: 1,
+//   test: 2
+// }
+// and here you can see no matter if you declare 'preface' that prop has to be equal to 0 and it equally thows an error if that prop is not even declared
+
+// NUMERIC INDEX SIGNATURES
+// Despite JS implicitly converts object properties lookup keys to strings, its is sometimes desirable to only allow numbers as keys for an object
+
+interface MoreNarrowNumbers {
+  [i: number]: string;
+  [i: string]: string | undefined;
+};
+
+const mixesNumbersAndString: MoreNarrowNumbers = {
+  0: '',
+  key1: '',
+  key2: undefined
+}
+// All good so far
+
+mixesNumbersAndString[1] = ''
+// also you can declare props with numeric keys like this 
+
+// NESTED INTERFACES
+// Just like objects you can nest properties and interfaces 
+
+interface Novel {
+  author: {
+    name: string;
+  };
+  setting: Setting
+}
+// here you can see an interface is nested inside another interface
+
+interface Setting {
+  place: string;
+  year: number;
+}
+
+// INTERFACE EXTENSIONS
+// sometimes, nto not be so repetitive with interfaces you can extend one interface with another so setting a 'base interface' that  just get added more propeties
+
+interface Writing {
+  title: string;
+}
+
+interface Novella extends Writing {
+  pages: number;
+}
+
+// so myNovella will need pages prop that comes from Novella, its own interface and title prop that comes from Writing, the interface that Novella extends to
+let myNovella: Novella = {
+  pages: 195,
+  title: 'Ethan Frome',
+}
+
+// as any interface this will throw an error with either a missing property or an extra property 
+
+// let missingProperty: Novella = {
+//   title: 'The Awakening'
+// }
+// and this one throws an error because it misses the property pages
+
+// let extraProperties: Novella = {
+//   pages: 12,
+//   title: 'testNovella',
+//   extra: false
+// }
+// this one throws an error because prop extra is not declared either in Novella or Writing interface
 
 export {}
