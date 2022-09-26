@@ -263,4 +263,39 @@ let myNovella: Novella = {
 // }
 // this one throws an error because prop extra is not declared either in Novella or Writing interface
 
+// EXTENDS TO MULTIPLE INTERFACES
+// TS allows to to extend an interface to multiple ones
+
+interface GivesNumber {
+  giveNumber(): number;
+}
+
+interface GivesString {
+  giveString(): string;
+}
+
+interface GivesBothAndEither extends GivesNumber, GivesString {
+  giveEither(): number | string;
+}
+
+// INTERFACE MERGING
+// one of the most powerful features about interfaces is their ability to be merged. If two interfaces on the same scope are declared with the same name they'll join into a bigger interface with all the declared fields
+
+interface Merged {
+  fromFirst: string;
+}
+
+interface Merged {
+  fromSecond: number;
+}
+
+//this is equivalent to
+interface NotMerged {
+  fromFirst: string;
+  fromSecond: number;
+}
+
+// Interface merging is not a feature used very often in day-to-day TS development. It's even recommended to avoid it when possible to not have interfaces declared many times throughout the code 
+// Types are not able to merge, so if the goal is to avoid it at all costs, just use types
+
 export {}
