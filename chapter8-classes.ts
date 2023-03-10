@@ -277,3 +277,24 @@ teacher2.learn(); // Ok
 teacher2.haveAHobby() // throws an error because not only on its class neither in its extended inherited class haveAHobby method is defined
 
 // EXTENSION ASSIGNABILITY
+
+class Lesson {
+  subject: string;
+
+  constructor(subject: string) {
+    this.subject = subject;
+  }
+}
+
+class OnlineLesson extends Lesson {
+  url: string;
+
+  constructor(subject: string, url: string) {
+    super(subject);
+    this.url = url;
+  }
+}
+
+let lesson: Lesson;
+lesson = new Lesson("coding");
+
