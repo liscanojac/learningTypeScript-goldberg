@@ -296,5 +296,141 @@ class OnlineLesson extends Lesson {
 }
 
 let lesson: Lesson;
-lesson = new Lesson("coding");
+lesson = new Lesson("coding"); // this works just fine, with the type declaration because its using the class straight away
 
+lesson = new OnlineLesson("coding", "oreilly.com"); // this also works fine because OnlineLesson its a class that inherits from Lesson
+
+// Although the inheritance doesnt work downwards as you can see here
+let onlineLesson: OnlineLesson;
+onlineLesson = new OnlineLesson("coding", "oreilly.com"); // Ok
+
+onlineLesson = new Lesson("coding"); // Here it throws an error because OnlineLesson inherits from Lesson and inheritance doesnt work downwards
+
+// Although when all the props in your extended class are optional you can use the inherited class even when declared the type of the subclass, here's an example:
+
+class PastGrades {
+  grades: Array<number> = [];
+}
+
+class LabeledPastGrades extends PastGrades {
+  label?: string;
+}
+
+let subclass: LabeledPastGrades;
+
+subclass = new LabeledPastGrades(); // Ok, the class matches the declared type
+
+subclass = new PastGrades(); // Ok, as LabeledPastGrades has all properties as optional PastGrades matches all its properties and it doesnt throws an error
+
+// OVERRIDING CONSTRUCTORS
+
+class GradeAnnouncer {
+  message: string;
+
+  constructor(grade: number) {
+    this.message = grade <= 65 ? "Maybe next time." : "You pass!";
+  }
+}
+
+class PassingAnnouncer extends GradeAnnouncer {
+  constructor() {
+    super(100);
+    // Even if the new class doesnt need a constructor, when you are extending it to another that it does, you need to call the constructor with the super in it
+  }
+}
+
+class FailingAnnouncer extends GradeAnnouncer {
+  constructor() {}
+  // Here you can see that TS is asking you for a super call
+}
+
+class AssistantAnnouncer extends GradeAnnouncer {
+  constructor(grade: number) {
+    super(grade);
+  }
+}
+
+class AssistantToTheRegionalCaller extends AssistantAnnouncer {
+  constructor() {
+    super()
+    // Here its throws an error again because even though we called the super, we did not pass the correct number of arguments 
+  }
+}
+
+// What about the super but without a constructor in the base class?
+
+class GradesTally {
+  grades: Array<number> = [];
+  addGrades(grades: Array<number>) {
+    this.grades.push(...grades);
+    return this.grades.length;
+  }
+}
+
+class ContinuedGradesTally extends GradesTally {
+  constructor(previousGrades: Array<number>) {
+    this.grades =[...previousGrades];
+    // as you can see even though GradesTally doesnt have a constructor it still requires a super to pass argument into its properties
+  }
+}
+
+class ContinuedGradesTallyFixed extends GradesTally {
+
+  constructor(previousGrades: Array<number>) {
+    super()
+    this.grades = previousGrades;
+    // Here is the same stuff, but with the super, even though there is not constructor in GradesTally to access the propeties in GradesTally in this extended class you need to call the super  
+  }
+}
+
+// Overridden Methods
+
+// you can declare methods in extended classes with the same names as the base classes as long as the types of the inherited methods match the types of the extended ones
+
+class GradeCounter {
+  countGrades(grades: Array<string>, letter: string) {
+    return grades.filter(grade => grade === letter).length;
+  }
+}
+
+class FailureCounter extends GradeCounter {
+  countGrades(grades: string[]): number {
+    return grades.filter(grade => grade === "F").length;
+  }
+  // here you can use it without the super because you arent accesing a super property
+}
+
+class SuperFailureCounter extends GradeCounter {
+  countGrades(grades: string[]): number {
+    return super.countGrades(grades, "F");
+    // here we are using the super with the method to access it more straightforward
+  }
+}
+
+
+// OVERRRIDEN PROPERTIES
+
+class Assignment {
+  grade: number;
+}
+
+let assignment = new Assignment();
+assignment.grade = 5;
+// as you can see here, you can declare the property of a class without a conbstructor and then in a variable declared by its class you can give value
+
+class Assignment2 {
+  grade?: number;
+}
+
+class GradedAssignment extends Assignment2 {
+  grade: number;
+  // here this grade is overwriting the grade from Assignment2
+
+  constructor(grade: number) {
+    super();
+    // even though we are not passing data to the Assignment2 class we need to call super to extend the class
+    // this super call has to be made here on top of the red of variables
+    
+    this.grade = grade;
+  }
+}
