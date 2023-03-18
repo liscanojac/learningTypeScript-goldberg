@@ -434,3 +434,36 @@ class GradedAssignment extends Assignment2 {
     this.grade = grade;
   }
 }
+
+// Although you have to mind the union types because in the example above grade coming from assignment is type number | undefined
+
+class NumericGrade {
+  grade: number;
+}
+
+class VagueGrade extends NumericGrade {
+  grade = Math.random() > 0.5 ? 1 : '0'
+  // here it throws an error because the NumericGrade class has a property grade declared as type number
+}
+
+class NumericGradeAssignment extends NumericGrade {
+  grade: number;
+
+  constructor(grade: number | string) {
+    super();
+    // if you comment the line below everything works great in this class because the super works fine without any argument due to NumericGrade not having a constructor with it
+
+    this.grade = grade;
+    // Athough this line throws an error, because the grade property is declared as a number
+  }
+}
+
+class NumericGrade2 {
+  grade = 0;
+  // here we are not only declaring the type of this property but also its value;
+}
+
+class VagueGrade2 extends NumericGrade2 {
+  // but as you can see in this extended class, you can change the value of the property
+  grade = Math.random() ? 1 : 2;
+}
