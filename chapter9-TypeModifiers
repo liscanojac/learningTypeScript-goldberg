@@ -1,0 +1,24 @@
+// Type Modifiers
+
+// Top types
+
+// any
+// the lack of type checking for any is that TS doesnt perform type checking assignability
+
+let anyValue: any;
+anyValue = "Lucille"; // ok
+anyValue = 123; // ok
+
+console.log(anyValue); // ok
+
+function greetComedian(name: any) {
+
+  console.log(`Announcing ${name.toUppercase()}!`);
+}
+// here TS doesnt report any type complaint
+
+greetComedian({ name: 'Bea Arthur' });
+// Athough right now looks ok, this will throw a Runtime Error due to the type of variable we're passing the function
+
+
+// unknown

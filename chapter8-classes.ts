@@ -464,6 +464,214 @@ class NumericGrade2 {
 }
 
 class VagueGrade2 extends NumericGrade2 {
-  // but as you can see in this extended class, you can change the value of the property
-  grade = Math.random() ? 1 : 2;
+  // but as you can see in this extended class, you can change the value of the property, although not its type
+  grade = Math.random() > 0.5 ? 1 : 2;
 }
+
+class VagueGrade3 extends NumericGrade2 {
+  grade = Math.random() > 0.5 ? 1 : '2'
+  // here it throws again an error because as said, you can change the value of a property in an extended type, but not its type
+}
+
+// ABSTRACT CLASSES
+// an bastract class is a class that expects the declaration of some methods by a subclass
+
+abstract class School {
+  readonly name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  // you have to use the keyword in the method to let TS know that this method will be declared in an extended class
+  abstract getStudentTypes(): Array<string>
+}
+
+class School2 {
+  readonly name: string
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  // and as you can see an abstract method can only exist within an abstract class
+  abstract getStudentTypes(): Array<string>
+}
+
+class Preschool extends School {
+  getStudentTypes(): string[] {
+    return ['preschooler'];
+  }
+}
+// as you can see here in Preschool the getStudentTypes method is defined 
+
+class Absence extends School {
+
+  constructor(name: string) {
+    super(name);
+  }
+  // here you can see the class Absence is throwing an error because althoug the constructor is well implemented, its missing the getStudentTypes method definition
+}
+
+// An abstract class cant be instantiated directly, only concrete classes can
+
+let school: School;
+
+school = new School('School name');
+
+let preschool: School;
+
+preschool = new Preschool('Sunny Daycare');
+
+preschool.name; // Sunny Daycare
+// Because if you dont overwrite the constructor in the extended class, it will use the constructor from the class above 
+
+// Also you can extend a class where all its properties or methods are optional so you can instantiate the base class or the subclass even when you declared a type as the subclass
+// you can see an example of that below
+
+class PastGrades2 {
+  grades: Array<number> = [];
+}
+
+class LabeledPastGrades2 extends PastGrades2 {
+  label?: string;
+}
+
+let subClass: LabeledPastGrades2;
+
+subClass = new LabeledPastGrades2(); // Ok
+
+subClass = new PastGrades2(); // here as you can see I declared subClass type as LabeledPastGrades2 I can instantiate it as PastGrades2 because on the subclass all the property and/or methods are declared as optional (label)
+
+// OVERRIDEN CONSTRUCTORS
+// like in JS in TS, in TS subclasses are not required define their own constructor. Subclasses without their own constructor they will use the constructor from their base class (it doesnt matter the level of inheritance to the subclass it will look for the base and get the constructor from there)
+
+class GradeAnnouncer2 {
+  message: string;
+
+  constructor(grade: number) {
+    this.message = grade >= 65 ? "You pass!" : "Maybe next time."
+  }
+}
+
+class PassingAnnouncer2 extends GradeAnnouncer2 {
+  constructor() {
+    super(100);
+  }
+}
+
+class FailingAnnouncer2 extends GradeAnnouncer2 {
+  constructor() {}
+  // as you can see as you override the constructor in a subclass, is expecting the super keyword with the number of argumets the constructor in the base class demands
+}
+
+// JS and TS rules define that any subclass must call the base constructor through super before accessing any property using the this keyword. And the same rule applies in TS
+
+class GradesTally2 {
+  grades: Array<number>;
+
+  addGrades(grades: Array<number>) {
+    this.grades.push(...grades);
+    // if you use push with the spread operator, it will push the vales to the base array and the whole array
+
+    return this.grades.length;
+  }
+}
+
+class ContinuedGradesTally2 extends GradesTally2 {
+  constructor(previousGrades: Array<number>) {
+    this.grades = [...previousGrades];
+    //here you can see the error we are describing above
+
+    super();
+    console.log(`Starting with length ${this.grades}`)
+  }
+}
+
+// OVERRRIDEN METHODS
+// Subclasses may redeclare new methods with the same name as the base class, as long as the method on the subclass mathches the types of the method in the base
+
+class GradeCounter2 {
+  countGrades(grades: Array<string>, gradeToCount: string) {
+    return grades.filter(grade => grade === gradeToCount).length;
+  }
+}
+
+class FailureCounter2 extends GradeCounter2 {
+  countGrades(grades: string[]) {
+    return super.countGrades(grades, "F");
+    // Here it works ok, because its a method that returns a number, just like its base method
+  }
+}
+
+class AnyFailureChecker extends GradeCounter2 {
+  countGrades(grades: string[]) {
+    return super.countGrades(grades, "F") !== 0;
+    // as you can see here is throwing an error because the method cant be redeclared to return a boolean
+  }
+}
+
+// MEMBER VISIBILITY
+
+// public (default) -- allowed to be accessed by anybody, anywhere
+// protected -- allowed to be accessed by the class itself and its subclasses
+// private -- allowed to be accessed only by the class itself
+
+class Base {
+  isPublicImplicit = 0;
+  public isPublicExplicit = 1;
+  protected isProtected = 2;
+  private isPrivate = 3;
+  #truePrivate = 4;
+}
+
+// DIFFERENCES BETWEEN PRIVATE AND TRUE PRIVATE
+// the difference is that private exists only in TS type system but it doesnt in runtime, so a private property and a public one will compile the same
+// But with # these field are truly private in the type system in run time and compiled.
+
+class SubClass extends Base {
+  examples() {
+    this.isPublicImplicit; // Ok
+    this.isPublicExplicit; // Ok
+    this.isProtected; // Ok
+    this.isPrivate; // Error
+    this.truePrivate; // Error
+  }
+}
+
+new SubClass().isPublicImplicit; // Ok
+new SubClass().isPublicExplicit; // Ok
+new SubClass().isProtected; // Error
+new SubClass().isPrivate; // Error
+new SubClass().truePrivate; // Error
+
+
+// readonly always comes after the visibility
+
+class TwoKeywords {
+  private readonly name: string;
+
+  constructor() {
+    this.name = 'Anne Sullivan';
+  }
+
+  log() {
+    console.log(this.name);
+  }
+}
+
+const two = new TwoKeywords();
+
+two.name; // Error
+
+two.log(); // Anne Sullivan
+
+class Question {
+  static answer: "bash";
+}
+
+const question = new Question()
+question.bash = 'test'
+// class ExtendedQustion extends Question {
+//   protected answer: "bash" = 'bash'; 
+// }
